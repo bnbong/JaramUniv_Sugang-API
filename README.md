@@ -58,8 +58,11 @@
 
 ## Application Start Up
 ---
-1. Open CMD, and write command : `docker-compose up`
+1. build SpringBoot Application to executable (at directory v2,): `./gradlew build`
+2. Open CMD, and write command (at directory root,): `docker-compose up`
 
 ## DB & Module Information
 ---
  - Github wiki page link here
+ - access mariadb container : write command `docker exec -it jaramuniv_sugang-api-database-1 /bin/bash` & `mysql -u root -p`
+ - check DB : `user jhubsugang`
