@@ -4,26 +4,78 @@
 @Author bnbong(이준혁, bbbong9@gmail.com)
    
 ## Directory Tree
----
+
+### Entire Project
 ```
-├── app   
-│   ├── v1 (FastAPI application)   
-│   │   ├── source files ...     
-│   │   ├── .gitignore      
-│   │   └── Dockerfile (for temporary build purpose)  
-│   └── v2 (Spring Boot application)    
-│       ├── source files ...     
-│       ├── .gitignore      
-│       └── Dockerfile (for temporary build purpose) 
-├── nginx (gateway)  
-│   └── conf     
-│       └── nginx.conf    
-│   └── logs  
-│       ├── access.log      
-│       └── error.log (contains warning)    
-├── .gitignore    
-├── docker-compose.yml   
-└── README.md  
+├── app
+│   ├── v1 (FastAPI application)
+│   │   ├── source files ...
+│   │   ├── .gitignore
+│   │   └── Dockerfile
+│   └── v2 (Spring Boot application)
+│       ├── source files ...
+│       ├── .gitignore
+│       └── Dockerfile
+├── nginx (gateway)
+│   └── conf
+│   │   └── nginx.conf
+│   └── logs
+│       ├── access.log
+│       └── error.log (contains warning)
+├── .gitignore
+├── docker-compose.yml
+└── README.md
+```
+
+### v1 (FastAPI Application)
+```
+├── v1
+│   └──  src
+│   │   ├── controller
+│   │   ├── db
+│   │   ├── routers
+│   │   ├── __init__.py
+│   │   ├── context.py
+│   │   └── settings.py
+│   └──  tests
+│       ├── __init__.py
+│       ├── conftext.py
+│       └──  test_initializer.py
+├── .gitignore
+├── Dockerfile
+├── requirements.txt
+├── setup.cfg
+├── setup.py
+└── main.py
+```
+
+### v2 (SpringBoot Application)
+```
+├── v2
+│   ├──  .gradle
+│   ├──  bin
+│   ├──  build
+│   ├──  gradle
+│   └──  src
+│       ├── main
+│       │   └── java
+│       │   │   └── com/jaramhub/sugangapi
+│       │   │       └── SugangapiApplication.java
+│       │   └── resources
+│       │       ├── static
+│       │       ├── templates
+│       │       └── application.properties
+│       └── test
+│           └── java
+│               └── com/jaramhub/sugangapi
+│                   └── SugangapiApplicationTests.java
+├── .gitignore
+├── Dockerfile
+├── HELP.md
+├── build.gradle
+├── gradlew
+├── gradlew.bat
+└── settings.gradle
 ```
 버저닝을 붙여가며 다른 언어의 프레임워크로 두개의 버전을 사용하는 API를 작성한 이유는 FastAPI로 먼저 개발한 후 스터디에서 학습중인 Spring Boot를 사용하여 완전히 동일한 기능을 수행하는 API를 재작성해보고 싶어서 위와 같이 구성했습니다.
 
@@ -57,6 +109,6 @@
 2. Open CMD, and write command (at directory root,): `docker-compose up`
 
 ## DB & Module Information
- - Github wiki page link here
+ - Github wiki page link [here]()
  - access mariadb container : write command `docker exec -it jaramuniv_sugang-api-database-1 /bin/bash` & `mysql -u root -p`
  - check DB : `user jhubsugang`
