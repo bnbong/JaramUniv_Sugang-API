@@ -109,6 +109,6 @@
 2. Open CMD, and write command (at directory root,): `docker-compose up`
 
 ## DB & Module Information
- - Github wiki page link [here]()
+ - Github wiki page link [here](https://github.com/bnbong/JaramUniv_Sugang-API/wiki)
  - access mariadb container : write command `docker exec -it jaramuniv_sugang-api-database-1 /bin/bash` & `mysql -u root -p`
  - check DB : `user jhubsugang`
