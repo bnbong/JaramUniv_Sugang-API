@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from dotenv import load_dotenv
 from pydantic import BaseSettings, Field
+
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
 
     DB_URI: str = Field(
-        default="mysql+aiomysql://jaramhubuser:jaramhubpassword@localhost:3306/jhubsugang",
+        default="",
         description="MariaDB URI",
     )
 

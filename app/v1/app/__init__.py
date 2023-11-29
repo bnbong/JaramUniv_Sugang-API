@@ -1,50 +1,53 @@
-# import functools
+# --------------------------------------------------------------------------
+# FastAPI Application을 생성하는 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
+import logging
+
+from setuptools_scm import get_version
 
 from fastapi import FastAPI
-# from fastapi import Request, Response
-# from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from contextlib import asynccontextmanager
 
-from .settings import Settings
-# from .context import create_app_context, bind_app_context, AppContext
-from .routers import ALL_ROUTERS
+from app.db.database import engine, Base
+from app.routers import router
+from app.core.settings import AppSettings
+from app.utils.documents import add_description_at_api_tags
+from app.helper.logging import init_logger as _init_logger
 
 
-def create_app(settings: Settings) -> FastAPI:
-    app = FastAPI()
+__version__ = get_version(root="../..", relative_to=__file__)
 
-    # app.add_event_handler(
-    #     "startup", functools.partial(app_startup, app, settings)
-    # )
+logger = logging.getLogger(__name__)
 
-    # app.add_event_handler(
-    #     "shutdown", functools.partial(app_shutdown, app)
-    # )
 
-    for api_router in ALL_ROUTERS:
-        app.include_router(api_router)
+def init_logger(app_settings: AppSettings) -> None:
+    _init_logger(f"fastapi-backend@{__version__}", app_settings)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        logger.info("Application startup")
+        logger.info("Create connection and setting up database")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        yield
+    finally:
+        logger.info("Application shutdown")
+
+
+def create_app(app_settings: AppSettings) -> FastAPI:
+    app = FastAPI(
+        title="Simple Backend API",
+        description="Simple Backend Application using FastAPI",
+        version=__version__,
+        lifespan=lifespan,
+    )
+
+    app.include_router(router)
+
+    add_description_at_api_tags(app)
 
     return app
-
-
-# async def app_startup(app: FastAPI, settings: Settings) -> None:
-#     app_context = await create_app_context(settings=settings)
-
-#     app.extra["_app_context"] = app_context
-
-#     async def _ctx_middleware(
-#         request: Request, call_next: RequestResponseEndpoint
-#     ) -> Response:
-#         async with bind_app_context(app_context=app_context):
-#             response = await call_next(request)
-#         return response
-
-#     app.add_middleware(BaseHTTPMiddleware, dispatch=_ctx_middleware)
-
-
-# async def app_shutdown(app: FastAPI) -> None:
-#     app_context: AppContext = app.extra["_app_context"]
-
-#     try:
-#         await app_context.db.engine.dispose()
-#     except Exception:
-#         print("Failed to dispose DB engine.")
