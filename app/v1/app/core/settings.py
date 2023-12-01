@@ -11,10 +11,14 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from pydantic import AnyUrl, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppSettings(BaseSettings):
+    DEBUG_MODE: bool = Field(
+        default=True,
+        description="If True, run the server in debug mode.",
+    )
     LOGGING_DEBUG_LEVEL: bool = Field(
         default=True,
         description="True: DEBUG mode, False:: INFO mode",
@@ -43,7 +47,7 @@ class AppSettings(BaseSettings):
     )
 
     DATABASE_URI: AnyUrl = Field(
-        default="mysql+aiomysql://jaramhubuser:jaramhubpassword@database:3306/jhubsugang",
+        default="mysql+aiomysql://bnbong:password@localhost:3306/test",
         description="MariaDB connection URI.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(
@@ -56,5 +60,4 @@ class AppSettings(BaseSettings):
         description="MariaDB option to create a connection.",
     )
 
-    class ConfigDict:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")

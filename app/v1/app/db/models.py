@@ -9,12 +9,12 @@ from sqlalchemy.orm import relationship
 from ._base import ModelBase
 
 
-class Course(ModelBase):
+class Course(ModelBase):  # 개설 과목
     __tablename__ = "COURSE"
 
     id = Column(Integer, primary_key=True)
-    course_name = Column(String(length=255), nullable=False)
-    course_description = Column(String(length=1024), nullable=False)
+    course_name = Column(String(length=90), nullable=False)
+    course_description = Column(String(length=255), nullable=False)
     course_capacity = Column(Integer, nullable=False)
 
     department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)
@@ -22,9 +22,10 @@ class Course(ModelBase):
 
     department = relationship("Department", back_populates="courses")
     professor = relationship("User", back_populates="courses")
+    enrollments = relationship("Enrollment", back_populates="course")
 
 
-class Department(ModelBase):
+class Department(ModelBase):  # 학과
     __tablename__ = "DEPARTMENT"
 
     code = Column(Integer, primary_key=True)
@@ -33,7 +34,7 @@ class Department(ModelBase):
     courses = relationship("Course", back_populates="department")
 
 
-class Enrollment(ModelBase):
+class Enrollment(ModelBase):  # 수강 신청 정보
     __tablename__ = "ENROLLMENT"
 
     id = Column(Integer, primary_key=True)
@@ -46,12 +47,12 @@ class Enrollment(ModelBase):
     course = relationship("Course", back_populates="enrollments")
 
 
-class User(ModelBase):
+class User(ModelBase):  # 회원 정보
     __tablename__ = "USER"
 
     id = Column(Integer, primary_key=True)
-    email = Column(String(length=255), unique=True, nullable=False)
-    real_name = Column(String(length=255), nullable=False)
+    email = Column(String(length=256), unique=True, nullable=False)
+    real_name = Column(String(length=30), nullable=False)
     user_type = Column(Enum("student", "instructor", name="user_type"), nullable=False)
 
     department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)

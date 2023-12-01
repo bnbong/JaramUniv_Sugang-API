@@ -1,5 +1,7 @@
 # --------------------------------------------------------------------------
-# Course model의 API router을 정의한 모듈입니다.
+# Department model의 API router을 정의한 모듈입니다.
+#
+# 단, Department 정보를 수정하는 기능은 관리자 계정만 사용 가능합니다.
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
@@ -16,7 +18,7 @@ from app.db import database
 
 
 log = getLogger(__name__)
-course_router = APIRouter(prefix="/course")
+course_router = APIRouter(prefix="/department")
 
 
 @course_router.get(

@@ -16,5 +16,5 @@ if __name__ in ("__main__", "builtins"):
         author_email="bbbong9@gmail.com",
         packages=find_packages(),
         package_data={},
-        python_requires=">=3.10, <3.11"
+        python_requires=">=3.10, <3.11",
     )

@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------
-# Course model의 API router을 정의한 모듈입니다.
+# Enrollment model의 API router을 정의한 모듈입니다.
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
@@ -16,7 +16,7 @@ from app.db import database
 
 
 log = getLogger(__name__)
-course_router = APIRouter(prefix="/course")
+course_router = APIRouter(prefix="/enrollment")
 
 
 @course_router.get(

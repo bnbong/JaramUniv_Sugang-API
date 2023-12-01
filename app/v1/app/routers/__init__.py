@@ -5,10 +5,16 @@
 # --------------------------------------------------------------------------
 from fastapi import APIRouter
 
-# from .member import member_router
+from .user import user_router
 # from .item import item_router
 # from .timetable import timetable_router
 
-router = APIRouter(prefix="/api/v1")
+router = APIRouter(prefix="/api")
 
-# router.include_router(member_router, tags=["member"])
+
+@router.get("/ping")
+async def ping():
+    return {"ping": "pong"}
+
+
+router.include_router(user_router, tags=["user"])
