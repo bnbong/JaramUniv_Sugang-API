@@ -43,7 +43,7 @@ class AppSettings(BaseSettings):
     )
 
     DATABASE_URI: AnyUrl = Field(
-        default="mysql+aiomysql://bnbong:password@localhost:3306/fastapidb",
+        default="mysql+aiomysql://jaramhubuser:jaramhubpassword@database:3306/jhubsugang",
         description="MariaDB connection URI.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(

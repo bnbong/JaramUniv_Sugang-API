@@ -13,8 +13,8 @@ class Course(ModelBase):
     __tablename__ = "COURSE"
 
     id = Column(Integer, primary_key=True)
-    course_name = Column(String, nullable=False)
-    course_description = Column(String, nullable=False)
+    course_name = Column(String(length=255), nullable=False)
+    course_description = Column(String(length=1024), nullable=False)
     course_capacity = Column(Integer, nullable=False)
 
     department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)
@@ -28,7 +28,7 @@ class Department(ModelBase):
     __tablename__ = "DEPARTMENT"
 
     code = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String(length=255), nullable=False)
 
     courses = relationship("Course", back_populates="department")
 
@@ -50,8 +50,8 @@ class User(ModelBase):
     __tablename__ = "USER"
 
     id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, nullable=False)
-    real_name = Column(String, nullable=False)
+    email = Column(String(length=255), unique=True, nullable=False)
+    real_name = Column(String(length=255), nullable=False)
     user_type = Column(Enum("student", "instructor", name="user_type"), nullable=False)
 
     department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)

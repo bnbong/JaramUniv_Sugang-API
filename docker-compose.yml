@@ -7,24 +7,26 @@ services:
       - "9090:9090"
     depends_on:
       - database
+    # networks:
+    #   - jaram-sugang-network
 
-  springboot_app:
-    build: ./app/v2
-    ports:
-      - "9091:9091"
-    depends_on:
-      - database
+  # springboot_app:
+  #   build: ./app/v2
+  #   ports:
+  #     - "9091:9091"
+  #   depends_on:
+  #     - database
 
-  nginx_gateway:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/logs:/logs
-    depends_on:
-      - fastapi_app
-      - springboot_app
+  # nginx_gateway:
+  #   image: nginx:latest
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./nginx/logs:/logs
+  #   depends_on:
+  #     - fastapi_app
+  #     - springboot_app
 
   database:
     image: mariadb:latest
@@ -35,8 +37,14 @@ services:
       MYSQL_PASSWORD: jaramhubpassword
     volumes:
       - db_data:/var/lib/mysql
+    # networks:
+    #   - jaram-sugang-network
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
 volumes:
   db_data:
+
+# networks:
+#   jaram-sugang-network:
+#     external: true

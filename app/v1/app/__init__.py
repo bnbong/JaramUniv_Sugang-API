@@ -17,7 +17,11 @@ from app.utils.documents import add_description_at_api_tags
 from app.helper.logging import init_logger as _init_logger
 
 
-__version__ = get_version(root="../..", relative_to=__file__)
+try:
+    __version__ = get_version(root="../../..", relative_to=__file__)
+except LookupError:
+    __version__ = "1.0.0"
+
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +44,8 @@ async def lifespan(app: FastAPI):
 
 def create_app(app_settings: AppSettings) -> FastAPI:
     app = FastAPI(
-        title="Simple Backend API",
-        description="Simple Backend Application using FastAPI",
+        title="Jaram Sugang API",
+        description="(자람 허브 스터디 최종 과제) 수강신청 API 입니다.",
         version=__version__,
         lifespan=lifespan,
     )
