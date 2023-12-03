@@ -41,5 +41,57 @@ async def get_all_instructors(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(database.get_db)
 ):
     log.info(f"Reading instructors info with skip: {skip} and limit: {limit}")
-    # return await crud.get_items(db, skip=skip, limit=limit)
-    pass
+    return await crud.get_all_instructors(db, skip=skip, limit=limit)
+
+
+@user_router.get(
+    "/{user_id}",
+    response_model=schemas.UserSchema,
+    summary="단일 회원 조회",
+    description="회원 정보를 조회합니다.",
+)
+async def read_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
+    db_user = await crud.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+    return db_user
+
+
+@user_router.post(
+    "/",
+    response_model=schemas.UserSchema,
+    summary="단일 회원 추가",
+    description="회원 정보를 추가합니다.",
+)
+async def create_user(
+    user: schemas.UserCreate, db: AsyncSession = Depends(database.get_db)
+):
+    return await crud.create_user(db, user)
+
+
+@user_router.put(
+    "/{user_id}",
+    response_model=schemas.UserSchema,
+    summary="단일 회원 정보 수정",
+    description="회원 정보를 수정합니다.",
+)
+async def update_user(
+    user_id: int, user: schemas.UserUpdate, db: AsyncSession = Depends(database.get_db)
+):
+    db_user = await crud.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+    return await crud.update_user(db, user_id, user)
+
+
+@user_router.delete(
+    "/{user_id}",
+    response_model=int,
+    summary="단일 회원 삭제",
+    description="회원을 삭제합니다.",
+)
+async def delete_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
+    db_user = await crud.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+    return await crud.delete_user(db, user_id)

@@ -3,13 +3,41 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ._base import get_objects
+from ._base import get_objects, get_object, create_object, update_object, delete_object
 from app.db.models import User
 from app.schemas import user as schema
+
+
+async def get_user(db, user_id) -> Optional[schema.UserSchema]:
+    return await get_object(
+        db=db, model=User, model_id=user_id, response_model=schema.UserSchema
+    )
+
+
+async def create_user(db: AsyncSession, user: schema.UserCreate) -> schema.UserSchema:
+    return await create_object(
+        db=db, model=User, obj=user, response_model=schema.UserSchema
+    )
+
+
+async def update_user(
+    db: AsyncSession, user_id: int, user: schema.UserUpdate
+) -> Optional[schema.UserSchema]:
+    return await update_object(
+        db=db,
+        model=User,
+        model_id=user_id,
+        obj=user,
+        response_model=schema.UserSchema,
+    )
+
+
+async def delete_user(db: AsyncSession, user_id: int) -> Optional[int]:
+    return await delete_object(db=db, model=User, model_id=user_id)
 
 
 async def get_all_students(
@@ -20,6 +48,19 @@ async def get_all_students(
         model=User,
         response_model=schema.UserSchema,
         condition=User.user_type == "student",
+        skip=skip,
+        limit=limit,
+    )
+
+
+async def get_all_instructors(
+    db: AsyncSession, skip: int = 0, limit: int = 100
+) -> List[schema.UserSchema]:
+    return await get_objects(
+        db=db,
+        model=User,
+        response_model=schema.UserSchema,
+        condition=User.user_type == "instructor",
         skip=skip,
         limit=limit,
     )

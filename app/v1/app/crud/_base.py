@@ -15,7 +15,10 @@ async def get_object(
 ) -> Optional[Any]:
     query = select(model).filter(model.id == model_id)
     result = (await db.execute(query)).scalar_one_or_none()
-    return response_model.model_validate(result.__dict__)
+    if result:
+        return response_model.model_validate(result.__dict__)
+    else:
+        return None
 
 
 async def get_objects(

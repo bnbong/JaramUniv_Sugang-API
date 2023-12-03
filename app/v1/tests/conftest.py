@@ -17,6 +17,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from app.db.database import Base, get_db
+from app.db.models import Department
 from app.core.settings import AppSettings
 from app import create_app
 
@@ -61,3 +62,21 @@ async def app_client() -> AsyncIterator[AsyncClient]:
         app=app, base_url="http://test"
     ) as app_client, LifespanManager(app):
         yield app_client
+
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def init_department_data(init_db):
+    async with AsyncSession(bind=test_engine) as session:
+        departments = [
+            Department(code="SW100", name="소프트웨어학과"),
+            Department(code="AI222", name="인공지능학과"),
+            Department(code="ICT12", name="ICT 융합학과"),
+            Department(code="PYS12", name="물리학과"),
+            Department(code="MATH1", name="수학과"),
+            Department(code="DUKNW", name="구근모를아십니과"),
+            Department(code="TP100", name="내거친생각과"),
+            Department(code="DLA73", name="불안한눈빛과"),
+            Department(code="ABCDE", name="그걸지켜보는과"),
+        ]
+        session.add_all(departments)
+        await session.commit()

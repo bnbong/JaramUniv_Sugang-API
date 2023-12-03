@@ -17,7 +17,7 @@ class Course(ModelBase):  # 개설 과목
     course_description = Column(String(length=255), nullable=False)
     course_capacity = Column(Integer, nullable=False)
 
-    department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)
+    department_code = Column(String(length=5), ForeignKey("DEPARTMENT.code"), nullable=False)
     professor_id = Column(Integer, ForeignKey("USER.id"), nullable=False)
 
     department = relationship("Department", back_populates="courses")
@@ -28,7 +28,7 @@ class Course(ModelBase):  # 개설 과목
 class Department(ModelBase):  # 학과
     __tablename__ = "DEPARTMENT"
 
-    code = Column(Integer, primary_key=True)
+    code = Column(String(length=5), primary_key=True)
     name = Column(String(length=255), nullable=False)
 
     courses = relationship("Course", back_populates="department")
@@ -55,7 +55,7 @@ class User(ModelBase):  # 회원 정보
     real_name = Column(String(length=30), nullable=False)
     user_type = Column(Enum("student", "instructor", name="user_type"), nullable=False)
 
-    department_code = Column(Integer, ForeignKey("DEPARTMENT.code"), nullable=False)
+    department_code = Column(String(length=5), ForeignKey("DEPARTMENT.code"), nullable=False)
 
     courses = relationship("Course", back_populates="professor")
     enrollments = relationship("Enrollment", back_populates="user")
