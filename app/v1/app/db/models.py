@@ -21,8 +21,8 @@ class Course(ModelBase):  # 개설 과목
     professor_id = Column(Integer, ForeignKey("USER.id"), nullable=False)
 
     department = relationship("Department", back_populates="courses")
-    professor = relationship("User", back_populates="courses")
-    enrollments = relationship("Enrollment", back_populates="course")
+    professor = relationship("User", back_populates="courses", lazy="selectin")
+    enrollments = relationship("Enrollment", back_populates="course", lazy="selectin")
 
 
 class Department(ModelBase):  # 학과
@@ -43,7 +43,7 @@ class Enrollment(ModelBase):  # 수강 신청 정보
     user_id = Column(Integer, ForeignKey("USER.id"), nullable=False)
     course_id = Column(Integer, ForeignKey("COURSE.id"), nullable=False)
 
-    user = relationship("User", back_populates="enrollments")
+    user = relationship("User", back_populates="enrollments", lazy="selectin")
     course = relationship("Course", back_populates="enrollments")
 
 

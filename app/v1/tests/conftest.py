@@ -20,7 +20,7 @@ from app.db.database import Base, get_db
 from app.db.models import Department
 from app.core.settings import AppSettings
 from app import create_app
-
+from tests.test_user import _create_user
 
 app_settings = AppSettings(_env_file=".env.test")
 
@@ -80,3 +80,24 @@ async def init_department_data(init_db):
         ]
         session.add_all(departments)
         await session.commit()
+
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def init_user_data(app_client: AsyncClient):
+    for i in range(5):
+        await _create_user(
+            app_client,
+            f"test{i}@testmail.com",
+            f"Test User {i}",
+            "student",
+            'ICT12',
+        )
+
+    for i in range(3):
+        await _create_user(
+            app_client,
+            f"professor{i}@testmail.com",
+            f"Professor {i}",
+            "instructor",
+            'SW100',
+        )

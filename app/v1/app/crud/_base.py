@@ -13,8 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def get_object(
     db: AsyncSession, model: Any, model_id: int, response_model: Type[BaseModel]
 ) -> Optional[Any]:
-    query = select(model).filter(model.id == model_id)
-    result = (await db.execute(query)).scalar_one_or_none()
+    result = await db.get(model, model_id)
+
     if result:
         return response_model.model_validate(result.__dict__)
     else:
@@ -34,6 +34,7 @@ async def get_objects(
         query = query.where(condition)
     result = await db.execute(query)
     result_list = result.scalars().all()
+    print(result_list[0].__dict__)
     return [response_model.model_validate(item.__dict__) for item in result_list]
 
 
@@ -56,8 +57,7 @@ async def update_object(
     obj: BaseModel,
     response_model: Type[BaseModel],
 ) -> Optional[Any]:
-    query = select(model).filter(model.id == model_id)
-    db_obj = (await db.execute(query)).scalar_one_or_none()
+    db_obj = await db.get(model, model_id)
     if db_obj is None:
         return None
     update_data = obj.model_dump(exclude_unset=True)
@@ -70,8 +70,7 @@ async def update_object(
 
 
 async def delete_object(db: AsyncSession, model: Any, model_id: int) -> Optional[int]:
-    query = select(model).filter(model.id == model_id)
-    db_obj = (await db.execute(query)).scalar_one_or_none()
+    db_obj = await db.get(model, model_id)
     if db_obj:
         await db.delete(db_obj)
         await db.commit()

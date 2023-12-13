@@ -39,24 +39,6 @@ class TestUserAPI:
             'SW100',
         )
 
-        for i in range(5):
-            await _create_user(
-                app_client,
-                f"test{i}@testmail.com",
-                f"Test User {i}",
-                "student",
-                'ICT12',
-            )
-
-        for i in range(3):
-            await _create_user(
-                app_client,
-                f"professor{i}@testmail.com",
-                f"Professor {i}",
-                "instructor",
-                'SW100',
-            )
-
     async def test_create_user(self, app_client: AsyncClient):
         # given
 

@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from app.core.middlewares import ExceptionMiddleware
 from app.db.database import engine, Base
 from app.routers import router
 from app.core.settings import AppSettings
@@ -68,6 +69,7 @@ def create_app(app_settings: AppSettings) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(ExceptionMiddleware, logger="app_error_logger")
 
     app.include_router(router)
 

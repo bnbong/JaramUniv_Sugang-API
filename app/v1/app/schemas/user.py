@@ -6,8 +6,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 
-from app.db.models import User
-
 
 class UserType(str, Enum):
     student = "student"
@@ -63,6 +61,5 @@ class UserSchema(BaseModel):
         ..., title="User's Department Code", description="유저의 소속 학과 코드입니다."
     )
 
-    class ConfigDict:
-        orm_mode = User
+    class Config:
         from_attributes = True
