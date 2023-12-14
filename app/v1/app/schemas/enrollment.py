@@ -11,7 +11,10 @@ from app.schemas.user import UserSchema
 
 class EnrolledUserSchema(BaseModel):
     student: UserSchema = Field(
-        validation_alias="user"
+        None,
+        title="수강 학생 정보",
+        description="해당 과목을 수강한 학생들의 정보입니다.",
+        validation_alias="user",
     )
 
     class Config:

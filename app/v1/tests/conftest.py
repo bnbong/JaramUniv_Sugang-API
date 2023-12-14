@@ -90,7 +90,7 @@ async def init_user_data(app_client: AsyncClient):
             f"test{i}@testmail.com",
             f"Test User {i}",
             "student",
-            'ICT12',
+            "ICT12",
         )
 
     for i in range(3):
@@ -99,5 +99,5 @@ async def init_user_data(app_client: AsyncClient):
             f"professor{i}@testmail.com",
             f"Professor {i}",
             "instructor",
-            'SW100',
+            "SW100",
         )

@@ -36,7 +36,7 @@ class TestUserAPI:
             "test@testmail.com",
             "John Doe",
             "student",
-            'SW100',
+            "SW100",
         )
 
     async def test_create_user(self, app_client: AsyncClient):
@@ -81,9 +81,7 @@ class TestUserAPI:
         # when
         response = await app_client.put(
             f"api/user/{self.test_user['id']}",
-            json={
-                "email": "another_test@testmail.com"
-            },
+            json={"email": "another_test@testmail.com"},
         )
 
         # then
@@ -97,9 +95,7 @@ class TestUserAPI:
         # when
         response = await app_client.put(
             f"api/user/{self.test_user['id']}",
-            json={
-                "real_name": "Jane Doe"
-            },
+            json={"real_name": "Jane Doe"},
         )
 
         # then
@@ -114,9 +110,7 @@ class TestUserAPI:
         # given
 
         # when
-        response = await app_client.delete(
-            f"api/user/{self.test_user['id']}"
-        )
+        response = await app_client.delete(f"api/user/{self.test_user['id']}")
 
         # then
         assert response.status_code == 200
@@ -126,7 +120,7 @@ class TestUserAPI:
 
         # then
         assert response.status_code == 404
-        assert response.json() == {'detail': '해당 유저를 찾을 수 없습니다.'}
+        assert response.json() == {"detail": "해당 유저를 찾을 수 없습니다."}
 
     async def test_get_students(self, app_client: AsyncClient):
         # given

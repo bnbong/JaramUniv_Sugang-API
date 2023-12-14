@@ -34,7 +34,6 @@ async def get_objects(
         query = query.where(condition)
     result = await db.execute(query)
     result_list = result.scalars().all()
-    print(result_list[0].__dict__)
     return [response_model.model_validate(item.__dict__) for item in result_list]
 
 
@@ -60,7 +59,7 @@ async def update_object(
     db_obj = await db.get(model, model_id)
     if db_obj is None:
         return None
-    update_data = obj.model_dump(exclude_unset=True)
+    update_data = obj.model_dump(exclude_unset=True, exclude_none=True)
     for key, value in update_data.items():
         setattr(db_obj, key, value)
     db.add(db_obj)
