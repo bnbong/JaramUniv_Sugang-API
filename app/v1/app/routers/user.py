@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import user as crud
 from app.db import database
-from app.schemas import user as schemas
+from app.schemas.requests import UserCreate, UserUpdate
+from app.schemas.responses import UserSchema
 
 
 log = getLogger(__name__)
@@ -20,7 +21,7 @@ user_router = APIRouter(prefix="/user")
 
 @user_router.get(
     "/students",
-    response_model=List[schemas.UserSchema],
+    response_model=List[UserSchema],
     summary="학생 회원 전체를 불러오기",
     description="모든 학생 회원에 대한 정보를 조회합니다.",
 )
@@ -33,7 +34,7 @@ async def get_all_students(
 
 @user_router.get(
     "/instructors",
-    response_model=List[schemas.UserSchema],
+    response_model=List[UserSchema],
     summary="교수 회원 전체를 불러오기",
     description="모든 교수 회원에 대한 정보를 조회합니다.",
 )
@@ -46,7 +47,7 @@ async def get_all_instructors(
 
 @user_router.get(
     "/{user_id}",
-    response_model=schemas.UserSchema,
+    response_model=UserSchema,
     summary="단일 회원 조회",
     description="회원 정보를 조회합니다.",
 )
@@ -59,24 +60,24 @@ async def read_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
 
 @user_router.post(
     "/",
-    response_model=schemas.UserSchema,
+    response_model=UserSchema,
     summary="단일 회원 추가",
     description="회원 정보를 추가합니다.",
 )
 async def create_user(
-    user: schemas.UserCreate, db: AsyncSession = Depends(database.get_db)
+    user: UserCreate, db: AsyncSession = Depends(database.get_db)
 ):
     return await crud.create_user(db, user)
 
 
 @user_router.put(
     "/{user_id}",
-    response_model=schemas.UserSchema,
+    response_model=UserSchema,
     summary="단일 회원 정보 수정",
     description="회원 정보를 수정합니다.",
 )
 async def update_user(
-    user_id: int, user: schemas.UserUpdate, db: AsyncSession = Depends(database.get_db)
+    user_id: int, user: UserUpdate, db: AsyncSession = Depends(database.get_db)
 ):
     db_user = await crud.get_user(db, user_id)
     if db_user is None:
@@ -86,7 +87,7 @@ async def update_user(
 
 @user_router.delete(
     "/{user_id}",
-    response_model=int,
+    status_code=204,
     summary="단일 회원 삭제",
     description="회원을 삭제합니다.",
 )

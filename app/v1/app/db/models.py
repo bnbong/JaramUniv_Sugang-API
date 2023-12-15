@@ -46,7 +46,7 @@ class Enrollment(ModelBase):  # 수강 신청 정보
     course_id = Column(Integer, ForeignKey("COURSE.id"), nullable=False)
 
     user = relationship("User", back_populates="enrollments", lazy="selectin")
-    course = relationship("Course", back_populates="enrollments")
+    course = relationship("Course", back_populates="enrollments", lazy="selectin")
 
 
 class User(ModelBase):  # 회원 정보

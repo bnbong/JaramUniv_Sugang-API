@@ -113,7 +113,7 @@ class TestUserAPI:
         response = await app_client.delete(f"api/user/{self.test_user['id']}")
 
         # then
-        assert response.status_code == 200
+        assert response.status_code == 204
 
         # when
         response = await app_client.get(f"api/user/{self.test_user['id']}")

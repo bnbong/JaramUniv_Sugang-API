@@ -7,9 +7,7 @@ from fastapi import APIRouter
 
 from .user import user_router
 from .course import course_router
-
-# from .item import item_router
-# from .timetable import timetable_router
+from .enrollment import enrollment_router
 
 router = APIRouter(prefix="/api")
 
@@ -21,3 +19,4 @@ async def ping():
 
 router.include_router(user_router, tags=["user"])
 router.include_router(course_router, tags=["course"])
+router.include_router(enrollment_router, tags=["enrollment"])

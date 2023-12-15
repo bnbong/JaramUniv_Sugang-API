@@ -8,61 +8,73 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud._base import get_objects, create_object, update_object, delete_object
-from app.db.models import User, Course
-from app.schemas import user as user_schema
-from app.schemas import course as schema
+from app.crud._base import get_objects, create_object, update_object
+from app.db.models import User, Course, Enrollment
+from app.schemas.requests import CourseCreate, CourseUpdate
+from app.schemas.responses import CourseDetailSchema, UserSchema
 
 
-async def get_user_by_name(db: AsyncSession, name: str) -> Optional[schema.UserSchema]:
+async def get_user_by_name(db: AsyncSession, name: str) -> Optional[UserSchema]:
     query = select(User).filter(User.real_name == name)
     result = (await db.execute(query)).scalar_one_or_none()
     if result:
-        return user_schema.UserSchema.model_validate(result.__dict__)
+        return UserSchema.model_validate(result.__dict__)
     else:
         return None
 
 
 async def get_courses(
     db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[schema.CourseSchema]:
+) -> List[CourseDetailSchema]:
     return await get_objects(
         db=db,
         model=Course,
-        response_model=schema.CourseSchema,
+        response_model=CourseDetailSchema,
         skip=skip,
         limit=limit,
     )
 
 
-async def get_course(db: AsyncSession, course_id: int) -> Optional[schema.CourseSchema]:
+async def get_course(db: AsyncSession, course_id: int) -> Optional[CourseDetailSchema]:
     query = select(Course).filter(Course.id == course_id)
     result = (await db.execute(query)).scalar_one_or_none()
     if result:
-        return schema.CourseSchema.model_validate(result.__dict__)
+        return CourseDetailSchema.model_validate(result.__dict__)
     else:
         return None
 
 
 async def create_course(
-    db: AsyncSession, course: schema.CourseCreate
-) -> schema.CourseSchema:
+    db: AsyncSession, course: CourseCreate
+) -> CourseDetailSchema:
     return await create_object(
-        db=db, model=Course, obj=course, response_model=schema.CourseSchema
+        db=db, model=Course, obj=course, response_model=CourseDetailSchema
     )
 
 
 async def update_course(
-    db: AsyncSession, course_id: int, course: schema.CourseUpdate
-) -> Optional[schema.CourseSchema]:
+    db: AsyncSession, course_id: int, course: CourseUpdate
+) -> Optional[CourseDetailSchema]:
     return await update_object(
         db=db,
         model=Course,
         model_id=course_id,
         obj=course,
-        response_model=schema.CourseSchema,
+        response_model=CourseDetailSchema,
     )
 
 
 async def delete_course(db: AsyncSession, course_id: int) -> Optional[int]:
-    return await delete_object(db=db, model=Course, model_id=course_id)
+    enrollments = await db.execute(
+        select(Enrollment).filter(Enrollment.course_id == course_id)
+    )
+    for enrollment in enrollments.scalars().all():
+        await db.delete(enrollment)
+
+    db_course = await db.get(Course, course_id)
+    if db_course:
+        await db.delete(db_course)
+        await db.commit()
+        return course_id
+    else:
+        return None

@@ -9,30 +9,31 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ._base import get_objects, get_object, create_object, update_object, delete_object
 from app.db.models import User
-from app.schemas import user as schema
+from app.schemas.requests import UserCreate, UserUpdate
+from app.schemas.responses import UserSchema
 
 
-async def get_user(db, user_id) -> Optional[schema.UserSchema]:
+async def get_user(db, user_id) -> Optional[UserSchema]:
     return await get_object(
-        db=db, model=User, model_id=user_id, response_model=schema.UserSchema
+        db=db, model=User, model_id=user_id, response_model=UserSchema
     )
 
 
-async def create_user(db: AsyncSession, user: schema.UserCreate) -> schema.UserSchema:
+async def create_user(db: AsyncSession, user: UserCreate) -> UserSchema:
     return await create_object(
-        db=db, model=User, obj=user, response_model=schema.UserSchema
+        db=db, model=User, obj=user, response_model=UserSchema
     )
 
 
 async def update_user(
-    db: AsyncSession, user_id: int, user: schema.UserUpdate
-) -> Optional[schema.UserSchema]:
+    db: AsyncSession, user_id: int, user: UserUpdate
+) -> Optional[UserSchema]:
     return await update_object(
         db=db,
         model=User,
         model_id=user_id,
         obj=user,
-        response_model=schema.UserSchema,
+        response_model=UserSchema,
     )
 
 
@@ -42,11 +43,11 @@ async def delete_user(db: AsyncSession, user_id: int) -> Optional[int]:
 
 async def get_all_students(
     db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[schema.UserSchema]:
+) -> List[UserSchema]:
     return await get_objects(
         db=db,
         model=User,
-        response_model=schema.UserSchema,
+        response_model=UserSchema,
         condition=User.user_type == "student",
         skip=skip,
         limit=limit,
@@ -55,11 +56,11 @@ async def get_all_students(
 
 async def get_all_instructors(
     db: AsyncSession, skip: int = 0, limit: int = 100
-) -> List[schema.UserSchema]:
+) -> List[UserSchema]:
     return await get_objects(
         db=db,
         model=User,
-        response_model=schema.UserSchema,
+        response_model=UserSchema,
         condition=User.user_type == "instructor",
         skip=skip,
         limit=limit,

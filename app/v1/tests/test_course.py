@@ -162,22 +162,21 @@ class TestCourseAPI:
         assert response_data["professor_info"]["id"] == 6
 
     async def test_delete_course(self, app_client: AsyncClient):
-        # TODO: 로직 완성 후 테스트케이스 추가 예정
-        # # given
-        # await _create_test_course_at_db(
-        #     "test_course",
-        #     "test_course_description",
-        #     30,
-        #     6,
-        #     "SW100",
-        # )
-        #
-        # await _create_enrollment_at_db(1, 1)
-        #
-        # # when
-        # response = await app_client.delete("api/course/1")
-        #
-        # # then
-        # response_data = response.json()
-        # print(response_data)\
-        pass
+        # given
+        await _create_test_course_at_db(
+            "test_course",
+            "test_course_description",
+            30,
+            6,
+            "SW100",
+        )
+
+        await _create_enrollment_at_db(1, 1)
+
+        # when
+        response = await app_client.delete("api/course/1")
+
+        # then
+        assert response.status_code == 204
+
+        # TODO: Enrollment 스키마 완성 후 실제로 Enrollment 데이터까지 삭제 되었는지 확인하는 로직 추가.
