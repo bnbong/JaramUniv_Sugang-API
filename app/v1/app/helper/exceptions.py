@@ -12,6 +12,7 @@ class ErrorCode(Enum):
     NOT_FOUND = ("NOT_FOUND", "JS-001", 404)
     UNKNOWN_ERROR = ("UNKNOWN_ERROR", "JS-002", 500)
     FORBIDDEN = ("FORBIDDEN", "JS-003", 403)
+    BAD_REQUEST = ("BAD_REQUEST", "JS-004", 400)
 
 
 class ExceptionSchema(BaseModel):

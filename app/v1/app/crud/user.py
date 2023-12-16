@@ -20,9 +20,7 @@ async def get_user(db, user_id) -> Optional[UserSchema]:
 
 
 async def create_user(db: AsyncSession, user: UserCreate) -> UserSchema:
-    return await create_object(
-        db=db, model=User, obj=user, response_model=UserSchema
-    )
+    return await create_object(db=db, model=User, obj=user, response_model=UserSchema)
 
 
 async def update_user(

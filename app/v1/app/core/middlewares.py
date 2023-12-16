@@ -52,7 +52,7 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
                 status=400,
                 error="DATABASE_BAD_REQUEST",
                 message="데이터베이스에 중복된 값이 존재합니다.",
-                errorCode="JS-004",
+                errorCode="JS-005",
                 path=request.url.path,
             )
             response_data = response.model_dump()

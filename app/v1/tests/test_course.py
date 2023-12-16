@@ -6,42 +6,8 @@
 import pytest_asyncio
 
 from httpx import AsyncClient
-from datetime import datetime
 
-from app.db.models import Course, Enrollment
-from .conftest import test_engine, AsyncSession
-
-
-async def _create_test_course_at_db(
-    course_name: str,
-    course_description: str,
-    course_capacity: int,
-    professor_id: int,
-    department_code: str,
-):
-    async with AsyncSession(bind=test_engine) as session:
-        test_board = Course(
-            course_name=course_name,
-            course_description=course_description,
-            course_capacity=course_capacity,
-            professor_id=professor_id,
-            department_code=department_code,
-        )
-        session.add(test_board)
-        await session.commit()
-        await session.refresh(test_board)
-
-
-async def _create_enrollment_at_db(user_id: int, course_id: int):
-    async with AsyncSession(bind=test_engine) as session:
-        enrollment = Enrollment(
-            user_id=user_id,
-            course_id=course_id,
-            enrollment_time=datetime.now(),  # 현재 시간을 등록 시간으로 설정
-        )
-        session.add(enrollment)
-        await session.commit()
-        await session.refresh(enrollment)
+from tests import _create_enrollment_at_db, _create_test_course_at_db
 
 
 class TestCourseAPI:
@@ -179,4 +145,12 @@ class TestCourseAPI:
         # then
         assert response.status_code == 204
 
-        # TODO: Enrollment 스키마 완성 후 실제로 Enrollment 데이터까지 삭제 되었는지 확인하는 로직 추가.
+        # (check) when
+        response_check = await app_client.get(
+            "api/enrollment/info?user_id=1",
+        )
+        response_check_2 = await app_client.get("api/enrollment/info?course_id=1")
+
+        # (check) then
+        assert len(response_check.json()) == 0
+        assert len(response_check_2.json()) == 0

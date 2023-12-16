@@ -100,10 +100,10 @@ class CourseUpdate(BaseModel):
 # --------------------------------------------------------------------------
 # Enrollment
 # --------------------------------------------------------------------------
-class EnrollmentCreate(BaseModel):
+class EnrollmentCreateDelete(BaseModel):
     course_id: int = Field(
         ..., title="Enrollment's Course ID", description="수강 신청할 과목의 ID입니다."
     )
-    student_id: int = Field(
+    user_id: int = Field(
         ..., title="Enrollment's Student ID", description="수강 신청할 학생의 ID입니다."
     )

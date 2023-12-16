@@ -44,9 +44,14 @@ async def get_course(db: AsyncSession, course_id: int) -> Optional[CourseDetailS
         return None
 
 
-async def create_course(
-    db: AsyncSession, course: CourseCreate
-) -> CourseDetailSchema:
+async def get_enrolled_students(db: AsyncSession, course_id: int) -> List[UserSchema]:
+    query = select(User).join(Enrollment).filter(Enrollment.course_id == course_id)
+    result = await db.execute(query)
+    result_list = result.scalars().all()
+    return [UserSchema.model_validate(item.__dict__) for item in result_list]
+
+
+async def create_course(db: AsyncSession, course: CourseCreate) -> CourseDetailSchema:
     return await create_object(
         db=db, model=Course, obj=course, response_model=CourseDetailSchema
     )

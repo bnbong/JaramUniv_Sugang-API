@@ -3,7 +3,17 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Enum
+from datetime import datetime
+
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    DateTime,
+    Enum,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 from ._base import ModelBase
@@ -38,9 +48,12 @@ class Department(ModelBase):  # 학과
 
 class Enrollment(ModelBase):  # 수강 신청 정보
     __tablename__ = "ENROLLMENT"
+    __table_args__ = (
+        UniqueConstraint("user_id", "course_id", name="uix_user_id_course_id"),
+    )
 
     id = Column(Integer, primary_key=True)
-    enrollment_time = Column(DateTime, nullable=False)
+    enrollment_time = Column(DateTime, nullable=False, default=datetime.now())
 
     user_id = Column(Integer, ForeignKey("USER.id"), nullable=False)
     course_id = Column(Integer, ForeignKey("COURSE.id"), nullable=False)

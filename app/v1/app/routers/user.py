@@ -64,9 +64,7 @@ async def read_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
     summary="단일 회원 추가",
     description="회원 정보를 추가합니다.",
 )
-async def create_user(
-    user: UserCreate, db: AsyncSession = Depends(database.get_db)
-):
+async def create_user(user: UserCreate, db: AsyncSession = Depends(database.get_db)):
     return await crud.create_user(db, user)
 
 

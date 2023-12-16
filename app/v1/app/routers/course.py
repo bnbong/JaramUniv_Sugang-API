@@ -6,15 +6,15 @@
 from logging import getLogger
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import course as crud
 from app.db import database
+from app.helper.exceptions import InternalException, ErrorCode
 
 from app.schemas.requests import CourseCreate, CourseUpdate
-from app.schemas.responses import CourseDetailSchema
-
+from app.schemas.responses import CourseDetailSchema, UserSchema
 
 log = getLogger(__name__)
 course_router = APIRouter(prefix="/course")
@@ -42,7 +42,22 @@ async def read_courses(
 async def read_course(course_id: int, db: AsyncSession = Depends(database.get_db)):
     db_course = await crud.get_course(db, course_id)
     if db_course is None:
-        raise HTTPException(status_code=404, detail="해당 과목을 찾을 수 없습니다.")
+        raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
+    return db_course
+
+
+@course_router.get(
+    "/{course_id}/students",
+    response_model=List[UserSchema],
+    summary="특정 과목 수강생 조회",
+    description="특정 과목에 대한 수강생 정보를 조회합니다.",
+)
+async def read_course_students(
+    course_id: int, db: AsyncSession = Depends(database.get_db)
+):
+    db_course = await crud.get_enrolled_students(db, course_id)
+    if db_course is None:
+        raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
     return db_course
 
 
@@ -71,7 +86,8 @@ async def update_course(
 ):
     db_course = await crud.get_course(db, course_id)
     if db_course is None:
-        raise HTTPException(status_code=404, detail="해당 과목을 찾을 수 없습니다.")
+        raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
+
     return await crud.update_course(db, course_id, course)
 
 
@@ -84,5 +100,5 @@ async def update_course(
 async def delete_course(course_id: int, db: AsyncSession = Depends(database.get_db)):
     db_course = await crud.get_course(db, course_id)
     if db_course is None:
-        raise HTTPException(status_code=404, detail="해당 과목을 찾을 수 없습니다.")
+        raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
     return await crud.delete_course(db, course_id)
