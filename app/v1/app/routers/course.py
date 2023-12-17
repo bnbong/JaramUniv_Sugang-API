@@ -15,6 +15,7 @@ from app.helper.exceptions import InternalException, ErrorCode
 
 from app.schemas.requests import CourseCreate, CourseUpdate
 from app.schemas.responses import CourseDetailSchema, UserSchema
+from ._check import auth, check_user, check_user_auth
 
 log = getLogger(__name__)
 course_router = APIRouter(prefix="/course")
@@ -25,6 +26,7 @@ course_router = APIRouter(prefix="/course")
     response_model=List[CourseDetailSchema],
     summary="전체 과목 조회",
     description="모든 과목에 대한 정보를 조회합니다.",
+    dependencies=[Depends(auth)],
 )
 async def read_courses(
     skip: int = 0, limit: int = 100, db: AsyncSession = Depends(database.get_db)
@@ -38,6 +40,7 @@ async def read_courses(
     response_model=CourseDetailSchema,
     summary="단일 과목 조회",
     description="특정 과목에 대한 정보를 조회합니다.",
+    dependencies=[Depends(auth)],
 )
 async def read_course(course_id: int, db: AsyncSession = Depends(database.get_db)):
     db_course = await crud.get_course(db, course_id)
@@ -51,6 +54,7 @@ async def read_course(course_id: int, db: AsyncSession = Depends(database.get_db
     response_model=List[UserSchema],
     summary="특정 과목 수강생 조회",
     description="특정 과목에 대한 수강생 정보를 조회합니다.",
+    dependencies=[Depends(auth)],
 )
 async def read_course_students(
     course_id: int, db: AsyncSession = Depends(database.get_db)
@@ -66,10 +70,16 @@ async def read_course_students(
     response_model=CourseDetailSchema,
     summary="과목 생성",
     description="새로운 과목을 생성합니다.",
+    dependencies=[Depends(auth)],
 )
 async def create_course(
-    course: CourseCreate, db: AsyncSession = Depends(database.get_db)
+    course: CourseCreate,
+    db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
 ):
+    user_pk = request_user
+    await check_user_auth(db, user_pk)
+
     return await crud.create_course(db, course)
 
 
@@ -78,12 +88,17 @@ async def create_course(
     response_model=CourseDetailSchema,
     summary="과목 수정",
     description="기존 과목의 정보를 수정합니다.",
+    dependencies=[Depends(auth)],
 )
 async def update_course(
     course_id: int,
     course: CourseUpdate,
     db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
 ):
+    user_pk = request_user
+    await check_user_auth(db, user_pk)
+
     db_course = await crud.get_course(db, course_id)
     if db_course is None:
         raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
@@ -96,8 +111,16 @@ async def update_course(
     status_code=204,
     summary="과목 삭제",
     description="기존 과목을 삭제합니다.",
+    dependencies=[Depends(auth)],
 )
-async def delete_course(course_id: int, db: AsyncSession = Depends(database.get_db)):
+async def delete_course(
+    course_id: int,
+    db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
+):
+    user_pk = request_user
+    await check_user_auth(db, user_pk)
+
     db_course = await crud.get_course(db, course_id)
     if db_course is None:
         raise InternalException("해당 과목을 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)

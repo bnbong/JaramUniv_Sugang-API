@@ -68,7 +68,9 @@ class User(ModelBase):  # 회원 정보
     id = Column(Integer, primary_key=True)
     email = Column(String(length=256), unique=True, nullable=False)
     real_name = Column(String(length=30), nullable=False)
-    user_type = Column(Enum("student", "instructor", name="user_type"), nullable=False)
+    user_type = Column(
+        Enum("student", "instructor", "admin", name="user_type"), nullable=False
+    )
 
     department_code = Column(
         String(length=5), ForeignKey("DEPARTMENT.code"), nullable=False

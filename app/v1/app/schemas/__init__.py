@@ -9,3 +9,4 @@ from enum import Enum
 class UserType(str, Enum):
     student = "student"
     instructor = "instructor"
+    admin = "admin"

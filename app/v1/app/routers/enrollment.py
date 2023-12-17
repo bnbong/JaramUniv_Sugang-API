@@ -14,6 +14,7 @@ from app.crud import enrollment as crud
 from app.helper.exceptions import InternalException, ErrorCode
 from app.schemas.requests import EnrollmentCreateDelete
 from app.schemas.responses import EnrollmentSchema
+from ._check import auth, check_user, check_user_is_self
 
 
 log = getLogger(__name__)
@@ -25,6 +26,7 @@ enrollment_router = APIRouter(prefix="/enrollment")
     response_model=List[EnrollmentSchema],
     summary="단일 과목 수강 신청 정보 조회",
     description="특정 과목에 대한 수강 신청 정보를 조회합니다.",
+    dependencies=[Depends(auth)],
 )
 async def read_enrollment(
     course_id: Optional[int] = Query(None, description="조회할 과목의 ID"),
@@ -50,25 +52,34 @@ async def read_enrollment(
     response_model=EnrollmentSchema,
     summary="단일 과목 수강 신청",
     description="특정 과목에 대한 수강 신청을 진행합니다.",
+    dependencies=[Depends(auth)],
 )
 async def create_enrollment(
     enrollment: EnrollmentCreateDelete,
     db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
 ):
+    user_pk = request_user
+    await check_user_is_self(db=db, user_pk=int(user_pk), target_pk=enrollment.user_id)
+
     return await crud.create_enrollment(db, enrollment)
 
 
-# 단일 과목에 대하여 수강 포기 : DELETE, 교수는 수강 포기 X
 @enrollment_router.post(
     "/abandon",
     status_code=204,
     summary="단일 과목 수강 포기",
     description="특정 과목에 대한 수강 포기를 진행합니다.",
+    dependencies=[Depends(auth)],
 )
 async def delete_enrollment(
     enrollment: EnrollmentCreateDelete,
     db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
 ):
+    user_pk = request_user
+    await check_user_is_self(db=db, user_pk=int(user_pk), target_pk=enrollment.user_id)
+
     db_enrollment = await crud.delete_enrollment(db, enrollment)
     if db_enrollment is None:
         raise InternalException("수강 신청 정보를 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)

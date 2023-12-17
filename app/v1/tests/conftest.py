@@ -101,3 +101,11 @@ async def init_user_data(app_client: AsyncClient):
             "instructor",
             "SW100",
         )
+
+    await _create_user(
+        app_client,
+        "admin@testmail.com",
+        "Admin",
+        "admin",
+        "SW100",
+    )

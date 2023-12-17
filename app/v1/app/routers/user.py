@@ -11,8 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud import user as crud
 from app.db import database
+from app.helper.exceptions import InternalException, ErrorCode
 from app.schemas.requests import UserCreate, UserUpdate
 from app.schemas.responses import UserSchema
+from ._check import auth, check_user, check_user_is_self
 
 
 log = getLogger(__name__)
@@ -54,7 +56,7 @@ async def get_all_instructors(
 async def read_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
     db_user = await crud.get_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+        raise InternalException("해당 유저를 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
     return db_user
 
 
@@ -73,13 +75,20 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(database.get_
     response_model=UserSchema,
     summary="단일 회원 정보 수정",
     description="회원 정보를 수정합니다.",
+    dependencies=[Depends(auth)],
 )
 async def update_user(
-    user_id: int, user: UserUpdate, db: AsyncSession = Depends(database.get_db)
+    user_id: int,
+    user: UserUpdate,
+    db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
 ):
+    user_pk = request_user
+    await check_user_is_self(db=db, user_pk=int(user_pk), target_pk=user_id)
+
     db_user = await crud.get_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+        raise InternalException("해당 유저를 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
     return await crud.update_user(db, user_id, user)
 
 
@@ -88,9 +97,17 @@ async def update_user(
     status_code=204,
     summary="단일 회원 삭제",
     description="회원을 삭제합니다.",
+    dependencies=[Depends(auth)],
 )
-async def delete_user(user_id: int, db: AsyncSession = Depends(database.get_db)):
+async def delete_user(
+    user_id: int,
+    db: AsyncSession = Depends(database.get_db),
+    request_user=Depends(check_user),
+):
+    user_pk = request_user
+    await check_user_is_self(db=db, user_pk=int(user_pk), target_pk=user_id)
+
     db_user = await crud.get_user(db, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="해당 유저를 찾을 수 없습니다.")
+        raise InternalException("해당 유저를 찾을 수 없습니다.", error_code=ErrorCode.NOT_FOUND)
     return await crud.delete_user(db, user_id)

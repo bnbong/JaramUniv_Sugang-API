@@ -7,7 +7,7 @@ import pytest_asyncio
 
 from httpx import AsyncClient
 
-from tests import _create_enrollment_at_db, _create_test_course_at_db
+from tests import _create_enrollment_at_db, _create_test_course_at_db, make_header
 
 
 class TestCourseAPI:
@@ -31,7 +31,7 @@ class TestCourseAPI:
         await _create_enrollment_at_db(3, 1)
 
         # when
-        response = await app_client.get("api/course/list")
+        response = await app_client.get("api/course/list", headers=make_header(1))
 
         # then
         response_data = response.json()
@@ -59,7 +59,7 @@ class TestCourseAPI:
         await _create_enrollment_at_db(3, 1)
 
         # when
-        response = await app_client.get("api/course/1")
+        response = await app_client.get("api/course/1", headers=make_header(1))
 
         # then
         response_data = response.json()
@@ -84,6 +84,7 @@ class TestCourseAPI:
                 "department_code": "SW100",
                 "professor_id": 6,
             },
+            headers=make_header(6),
         )
 
         # then
@@ -115,6 +116,7 @@ class TestCourseAPI:
                 "course_description": "another_course_description",
                 "course_capacity": 45,
             },
+            headers=make_header(6),
         )
 
         # then
@@ -140,16 +142,18 @@ class TestCourseAPI:
         await _create_enrollment_at_db(1, 1)
 
         # when
-        response = await app_client.delete("api/course/1")
+        response = await app_client.delete("api/course/1", headers=make_header(6))
 
         # then
         assert response.status_code == 204
 
         # (check) when
         response_check = await app_client.get(
-            "api/enrollment/info?user_id=1",
+            "api/enrollment/info?user_id=1", headers=make_header(1)
         )
-        response_check_2 = await app_client.get("api/enrollment/info?course_id=1")
+        response_check_2 = await app_client.get(
+            "api/enrollment/info?course_id=1", headers=make_header(1)
+        )
 
         # (check) then
         assert len(response_check.json()) == 0

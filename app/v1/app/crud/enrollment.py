@@ -46,7 +46,7 @@ async def create_enrollment(
 ) -> EnrollmentSchema:
     user = await db.get(User, enrollment.user_id)
     course = await db.get(Course, enrollment.course_id)
-    if not user.user_type == "student":
+    if user.user_type == "instructor":
         raise InternalException("교수는 수강 신청이 불가능합니다.", ErrorCode.FORBIDDEN)
     if course.course_capacity <= len(course.enrollments):
         raise InternalException("수강 신청 인원이 꽉 찼습니다.", ErrorCode.FORBIDDEN)
@@ -60,7 +60,7 @@ async def delete_enrollment(
     db: AsyncSession, enrollment: EnrollmentCreateDelete
 ) -> Optional[int]:
     user = await db.get(User, enrollment.user_id)
-    if not user.user_type == "student":
+    if user.user_type == "instructor":
         raise InternalException("교수는 수강 포기가 불가능합니다.", ErrorCode.FORBIDDEN)
 
     enrollment_record = await db.execute(

@@ -7,7 +7,7 @@ import pytest_asyncio
 
 from httpx import AsyncClient
 
-from tests import _create_enrollment_at_db, _create_test_course_at_db
+from tests import _create_enrollment_at_db, _create_test_course_at_db, make_header
 
 
 class TestEnrollmentAPI:
@@ -30,7 +30,9 @@ class TestEnrollmentAPI:
         await _create_enrollment_at_db(1, 2)
 
         # when
-        response = await app_client.get("api/enrollment/info?course_id=1")
+        response = await app_client.get(
+            "api/enrollment/info?course_id=1", headers=make_header(1)
+        )
 
         # then
         response_data = response.json()
@@ -42,7 +44,9 @@ class TestEnrollmentAPI:
         assert response_data[1]["student_id"].get("id") == 2
 
         # when
-        response = await app_client.get("api/enrollment/info?user_id=1")
+        response = await app_client.get(
+            "api/enrollment/info?user_id=1", headers=make_header(1)
+        )
 
         # then
         response_data = response.json()
@@ -54,7 +58,9 @@ class TestEnrollmentAPI:
         assert response_data[1]["student_id"].get("id") == 1
 
         # when
-        response = await app_client.get("api/enrollment/info?user_id=1&course_id=1")
+        response = await app_client.get(
+            "api/enrollment/info?user_id=1&course_id=1", headers=make_header(1)
+        )
 
         # then
         response_data = response.json()
@@ -80,6 +86,33 @@ class TestEnrollmentAPI:
                 "course_id": 1,
                 "user_id": 3,
             },
+            headers=make_header(3),
+        )
+
+        # then
+        response_data = response.json()
+        assert response.status_code == 200
+        assert response_data["course_id"].get("id") == 1
+        assert response_data["student_id"].get("id") == 3
+
+    async def test_create_enrollments_admin(self, app_client: AsyncClient):
+        # given
+        await _create_test_course_at_db(
+            f"test_course",
+            f"test_course_description",
+            30,
+            6,
+            "SW100",
+        )
+
+        # when
+        response = await app_client.post(
+            "api/enrollment",
+            json={
+                "course_id": 1,
+                "user_id": 3,
+            },
+            headers=make_header(9),
         )
 
         # then
@@ -102,7 +135,7 @@ class TestEnrollmentAPI:
         await _create_enrollment_at_db(3, 1)
 
         # when
-        response = await app_client.get("api/course/1/students")
+        response = await app_client.get("api/course/1/students", headers=make_header(1))
 
         # then
         response_data = response.json()
@@ -132,6 +165,7 @@ class TestEnrollmentAPI:
                 "course_id": 1,
                 "user_id": 1,
             },
+            headers=make_header(1),
         )
 
         # then
@@ -139,12 +173,12 @@ class TestEnrollmentAPI:
 
         # (check) when
         response_check_1 = await app_client.get(
-            "api/enrollment/info?course_id=1",
+            "api/enrollment/info?course_id=1", headers=make_header(1)
         )
         response_check_2 = await app_client.get(
-            "api/enrollment/info?user_id=1",
+            "api/enrollment/info?user_id=1", headers=make_header(1)
         )
-        response_check_3 = await app_client.get("api/course/1")
+        response_check_3 = await app_client.get("api/course/1", headers=make_header(1))
 
         # (check) then
         response_data = response_check_3.json()
@@ -157,6 +191,45 @@ class TestEnrollmentAPIFail:
     @pytest_asyncio.fixture(autouse=True)
     async def setup(self, app_client: AsyncClient):
         pass
+
+    async def test_request_header_not_provided(self, app_client: AsyncClient):
+        # given
+
+        # when
+        response = await app_client.get("api/enrollment/info?course_id=1")
+
+        # then
+        response_data = response.json()
+        assert response.status_code == 400
+        assert response_data["message"] == "인증 정보가 없습니다."
+        assert response_data["errorCode"] == "JS-004"
+
+    async def test_create_enrollments_fail_unmatched_user(
+        self, app_client: AsyncClient
+    ):
+        # given
+        await _create_test_course_at_db(
+            f"test_course",
+            f"test_course_description",
+            30,
+            6,
+            "SW100",
+        )
+
+        # when
+        response = await app_client.post(
+            "api/enrollment",
+            json={
+                "course_id": 1,
+                "user_id": 2,
+            },
+            headers=make_header(1),
+        )
+
+        # then
+        response_data = response.json()
+        assert response.status_code == 403
+        assert response_data["message"] == "해당 작업은 본인만 가능합니다."
 
     async def test_create_enrollments_fail_not_student(self, app_client: AsyncClient):
         # given
@@ -175,6 +248,7 @@ class TestEnrollmentAPIFail:
                 "course_id": 1,
                 "user_id": 6,
             },
+            headers=make_header(6),
         )
 
         # then
@@ -201,6 +275,7 @@ class TestEnrollmentAPIFail:
                 "course_id": 1,
                 "user_id": 3,
             },
+            headers=make_header(3),
         )
 
         # then
@@ -228,6 +303,7 @@ class TestEnrollmentAPIFail:
                 "course_id": 1,
                 "user_id": 1,
             },
+            headers=make_header(1),
         )
 
         # then
@@ -252,6 +328,7 @@ class TestEnrollmentAPIFail:
                 "course_id": 1,
                 "user_id": 6,
             },
+            headers=make_header(6),
         )
 
         # then
@@ -276,6 +353,7 @@ class TestEnrollmentAPIFail:
                 "course_id": 1,
                 "user_id": 1,
             },
+            headers=make_header(1),
         )
 
         # then
