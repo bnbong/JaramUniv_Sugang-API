@@ -149,6 +149,7 @@ CRUD 메소드 작성: 과목을 삭제하기 전에 관련 수강 신청 레코
 │       ├── access.log
 │       └── error.log (contains warning)
 ├── .gitignore
+├── docker-compose.prod.yml
 ├── docker-compose.yml
 └── README.md
 ```
@@ -180,7 +181,7 @@ CRUD 메소드 작성: 과목을 삭제하기 전에 관련 수강 신청 레코
 
 ## Application Start Up
 1. build SpringBoot Application to executable (at directory v2,): `./gradlew build`
-2. Open CMD, and write command (at directory root,): `docker compose up -d`
+2. Open CMD, and write command (at directory root,): `docker compose up -f docker-compose.yml -d`
 
 ## DB & Module Information
  - Github wiki page link [here](https://github.com/bnbong/JaramUniv_Sugang-API/wiki)

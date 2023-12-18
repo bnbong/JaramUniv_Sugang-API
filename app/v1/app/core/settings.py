@@ -23,9 +23,13 @@ class AppSettings(BaseSettings):
         default=True,
         description="True: DEBUG mode, False:: INFO mode",
     )
-    LOG_FILE_PATH: str = Field(
-        default="../logs/app.log",
+    ACCESS_LOG_FILE_PATH: str = Field(
+        default="./logs/access.log",
         description="Log file path",
+    )
+    ERROR_LOG_FILE_PATH: str = Field(
+        default="./logs/error.log",
+        description="Error log file path",
     )
     DEBUG_ALLOW_CORS_ALL_ORIGIN: bool = Field(
         default=True,

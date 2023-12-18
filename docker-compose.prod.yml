@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  fastapi_app:
+    build: ./app/v1
+    ports:
+      - "9090:9090"
+    networks:
+      - jaram-sugang-network
+    volumes:
+      - ./app/v1:/app
+      - service_logs:/service_logs
+
+  springboot_app:
+    build: ./app/v2
+    ports:
+      - "9091:9091"
+    networks:
+      - jaram-sugang-network
+    volumes:
+      - service_logs:/service_logs
+
+  nginx_gateway:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - service_logs:/logs
+    depends_on:
+      - fastapi_app
+      - springboot_app
+    networks:
+      - jaram-sugang-network
+
+volumes:
+  db_data:
+  service_logs:
+
+networks:
+  jaram-sugang-network:
+    external: true

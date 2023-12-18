@@ -24,8 +24,8 @@ def init_logger(root_logger_name: str, app_settings: AppSettings) -> logging.Log
         logging.DEBUG if app_settings.LOGGING_DEBUG_LEVEL else logging.INFO
     )
 
-    logging_file = app_settings.LOG_FILE_PATH
-    error_logging_file = logging_file.replace(".log", "_errors.log")
+    logging_file = app_settings.ACCESS_LOG_FILE_PATH
+    error_logging_file = app_settings.ERROR_LOG_FILE_PATH
 
     logging.basicConfig(level=app_logger_level, format=LOGGING_FORMAT)
 
