@@ -10,14 +10,14 @@ services:
     volumes:
       - service_logs:/service_logs
 
-  springboot_app:
-    build: ./app/v2
-    ports:
-      - "9091:9091"
-    networks:
-      - myserver_service_net
-    volumes:
-      - service_logs:/service_logs
+  # springboot_app:
+  #   build: ./app/v2
+  #   ports:
+  #     - "9091:9091"
+  #   networks:
+  #     - myserver_service_net
+  #   volumes:
+  #     - service_logs:/service_logs
 
   nginx_gateway:
     image: nginx:latest
@@ -27,7 +27,7 @@ services:
       - service_logs:/logs
     depends_on:
       - fastapi_app
-      - springboot_app
+      # - springboot_app
     networks:
       - myserver_service_net
 
