@@ -6,7 +6,7 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - myserver_api_net
+      - myserver_service_net
     volumes:
       - service_logs:/service_logs
 
@@ -15,7 +15,7 @@ services:
     ports:
       - "9091:9091"
     networks:
-      - myserver_api_net
+      - myserver_service_net
     volumes:
       - service_logs:/service_logs
 
@@ -29,7 +29,7 @@ services:
       - fastapi_app
       - springboot_app
     networks:
-      - myserver_api_net
+      - myserver_service_net
 
 volumes:
   db_data:
