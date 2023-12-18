@@ -36,5 +36,5 @@ volumes:
   service_logs:
 
 networks:
-  myserver_api_net:
+  myserver_service_net:
     external: true
