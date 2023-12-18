@@ -20,21 +20,7 @@ services:
     volumes:
       - service_logs:/service_logs
 
-  nginx_gateway:
-    image: nginx:latest
-    ports:
-      - "9080:80"
-    volumes:
-      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - service_logs:/logs
-    depends_on:
-      - fastapi_app
-      - springboot_app
-    networks:
-      - myserver_api_net
-
 volumes:
-  db_data:
   service_logs:
 
 networks:
