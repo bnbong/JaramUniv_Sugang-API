@@ -24,7 +24,6 @@ services:
     ports:
       - "9080:80"
     volumes:
-      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
       - service_logs:/logs
     depends_on:
       - fastapi_app
