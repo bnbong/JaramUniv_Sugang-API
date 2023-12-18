@@ -6,7 +6,7 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - jaram-sugang-network
+      - myserver_api_net
     volumes:
       - ./app/v1:/app
       - service_logs:/service_logs
@@ -16,7 +16,7 @@ services:
     ports:
       - "9091:9091"
     networks:
-      - jaram-sugang-network
+      - myserver_api_net
     volumes:
       - service_logs:/service_logs
 
@@ -31,12 +31,12 @@ services:
       - fastapi_app
       - springboot_app
     networks:
-      - jaram-sugang-network
+      - myserver_api_net
 
 volumes:
   db_data:
   service_logs:
 
 networks:
-  jaram-sugang-network:
+  myserver_api_net:
     external: true
