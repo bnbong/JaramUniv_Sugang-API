@@ -9,7 +9,7 @@ from .user import user_router
 from .course import course_router
 from .enrollment import enrollment_router
 
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/jaram-sugang/v1")
 
 
 @router.get("/ping")
